@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router";
 import Layout from "@/pages/Layout/Layout";
-import Login from "@/pages/Login/Login";
+import Login from "@/pages/Login/login";
 
 const router = createBrowserRouter([
   { path: "/", Component: Layout },
