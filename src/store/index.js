@@ -6,6 +6,7 @@ const store = configureStore({
   reducer: {
     user: userReducer,
   },
+  devTools: import.meta.env.DEV, // 或 true
 });
 
 export default store;

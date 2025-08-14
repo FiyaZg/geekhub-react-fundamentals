@@ -1,14 +1,16 @@
 import "./login.scss";
 import logo from "@/assets/logo.png";
 import { useState, useRef, useEffect } from "react";
-import { fetchLogin, setToken } from "@/store/modules/user";
+import { fetchLogin, setToken, fetchUserInfo } from "@/store/modules/user";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router";
+import { useNavigate, useLocation } from "react-router-dom";
 import { message } from "antd";
 
 export default function Login() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/";
 
   const [emailIsInvalid, setEmailIsInvalid] = useState(false);
   const [passwordIsInvalid, setPasswordIsInvalid] = useState(false);
@@ -28,7 +30,7 @@ export default function Login() {
     });
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     // const emailIsValid = email.current.value.includes("@");
@@ -46,14 +48,14 @@ export default function Login() {
     setPasswordIsInvalid(false);
 
     try {
-      dispatch(
+      await dispatch(
         fetchLogin({
           mobile: email.current.value,
           code: password.current.value,
         })
       );
       message.success("登录成功！");
-      navigate("/");
+      navigate(from, { replace: true });
     } catch (err) {
       message.error(getErrMsg(err));
     }

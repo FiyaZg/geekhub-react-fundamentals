@@ -1,31 +1,64 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { request } from "@/utils";
+import {
+  request,
+  removeToken as _removeToken,
+  setToken as _setToken,
+  getToken,
+} from "@/utils";
 
 const userStore = createSlice({
   name: "user",
   //数据状态
   initialState: {
-    token: "",
+    token: getToken() || "",
+    userInfo: null,
   },
   //修改方法
   reducers: {
     setToken(state, action) {
       state.token = action.payload;
+      _setToken(action.payload);
+    },
+    removeToken(state) {
+      state.token = "";
+      _removeToken();
+    },
+
+    setUserInfo(state, action) {
+      state.userInfo = action.payload;
+    },
+    clearUserInfo(state, action) {
+      state.token = "";
+      state.userInfo = null;
+      _removeToken();
     },
   },
 });
 
-//每个 reducers 里的方法都会生成一个同名的 action creator
-const { setToken } = userStore.actions; //根据reducers里的方法名 造 指令
-const userReducer = userStore.reducer;
-
 function fetchLogin(values) {
   return async (dispatch) => {
-    const res = await request.post("./authorizations", values);
+    const res = await request.post("/authorizations", values);
+
+    const token = res.data.token;
+    _setToken(token);
     dispatch(setToken(res.data.token));
+
     return res.data;
   };
 }
 
-export { setToken, fetchLogin };
+function fetchUserInfo() {
+  return async (dispatch) => {
+    console.log("fetchUserInfo...");
+    const res = await request.get("/user/profile");
+    console.log(res.data);
+    dispatch(setUserInfo(res.data));
+  };
+}
+
+//每个 reducers 里的方法都会生成一个同名的 action creator
+const { setToken, setUserInfo, clearUserInfo } = userStore.actions; //根据reducers里的方法名 造 指令
+export { setToken, fetchLogin, fetchUserInfo, clearUserInfo };
+
+const userReducer = userStore.reducer;
 export default userReducer;
