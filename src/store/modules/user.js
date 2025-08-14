@@ -5,6 +5,7 @@ import {
   setToken as _setToken,
   getToken,
 } from "@/utils";
+import * as api from "@/apis/user";
 
 const userStore = createSlice({
   name: "user",
@@ -37,8 +38,7 @@ const userStore = createSlice({
 
 function fetchLogin(values) {
   return async (dispatch) => {
-    const res = await request.post("/authorizations", values);
-
+    const res = await api.loginAPI(values);
     const token = res.data.token;
     _setToken(token);
     dispatch(setToken(res.data.token));
@@ -49,8 +49,7 @@ function fetchLogin(values) {
 
 function fetchUserInfo() {
   return async (dispatch) => {
-    console.log("fetchUserInfo...");
-    const res = await request.get("/user/profile");
+    const res = await api.getProfileAPI();
     console.log(res.data);
     dispatch(setUserInfo(res.data));
   };
